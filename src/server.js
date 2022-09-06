@@ -27,6 +27,26 @@ app.post("/orders", async (req, res) => {
   res.status(201).end();
 });
 
+//Method: UPDATE
+app.put("/orders/:id", async (req, res) => {
+  const payload = req.body;
+  const { id } = req.params;
+
+  await Order.findByIdAndUpdate(id, { $set: payload });
+
+  res.json(payload);
+  res.status(200).end();
+});
+
+//Method: DELETE
+app.delete("/orders/:id", async (req, res) => {
+  const { id } = req.params;
+
+  await Order.findByIdAndDelete(id);
+  res.json({ id: id });
+  res.status(204).end();
+});
+
 //Handling unexpected errors
 mongoose.connection.on("error", (err) => {
   console.error("MongoDB error", err);
