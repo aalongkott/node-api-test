@@ -5,26 +5,31 @@ require("dotenv").config();
 
 const Order = require("../models/order.js");
 
-mongoose.connect(process.env.DB_LINK, {
-  useNewUrlParser: true,
-});
+mongoose.connect(process.env.DB_LINK);
 
 app.use(express.json());
 
 //Method: GET
 app.get("/orders", async (_, res) => {
-  const orders = await Order.find({});
-  res.json(orders);
+  try {
+    const orders = await Order.find({});
+    res.json(orders);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
 //Method: POST
 app.post("/orders", async (req, res) => {
-  const payload = req.body;
-  const order = new Order(payload);
-  await order.save();
+  try {
+    const payload = req.body;
+    const order = new Order(payload);
+    await order.save();
 
-  res.json(order);
-  res.status(201).end();
+    res.status(201).json(order);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
 });
 
 //Method: UPDATE
@@ -40,11 +45,14 @@ app.put("/orders/:id", async (req, res) => {
 
 //Method: DELETE
 app.delete("/orders/:id", async (req, res) => {
-  const { id } = req.params;
+  try {
+    const { id } = req.params;
 
-  await Order.findByIdAndDelete(id);
-  res.json({ id: id });
-  res.status(204).end();
+    await Order.findByIdAndDelete(id);
+    res.status(204).json({ id: id });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
 //Handling unexpected errors
