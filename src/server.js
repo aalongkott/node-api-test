@@ -7,6 +7,12 @@ const Order = require("../models/order.js");
 
 mongoose.connect(process.env.DB_URL);
 
+mongoose.connection.on("error", (err) => {
+  console.error("MongoDB error", err);
+});
+
+mongoose.connection.once("open", () => console.log("Connected to Database"));
+
 app.use(express.json());
 
 //Method: GET
@@ -58,13 +64,6 @@ app.delete("/orders/:id", async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
-
-//Handling unexpected errors
-mongoose.connection.on("error", (err) => {
-  console.error("MongoDB error", err);
-});
-
-mongoose.connection.once("open", () => console.log("Connected to Database"));
 
 app.listen(9000, () => {
   console.log("Application is running on port 9000");
