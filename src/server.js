@@ -26,7 +26,7 @@ app.post("/orders", async (req, res) => {
     const order = new Order(payload);
     await order.save();
 
-    res.status(201).json(order);
+    res.status(201).json({ message: "Success", order });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
@@ -34,13 +34,15 @@ app.post("/orders", async (req, res) => {
 
 //Method: UPDATE
 app.put("/orders/:id", async (req, res) => {
-  const payload = req.body;
-  const { id } = req.params;
+  try {
+    const payload = req.body;
+    const { id } = req.params;
 
-  await Order.findByIdAndUpdate(id, { $set: payload });
-
-  res.json(payload);
-  res.status(200).end();
+    await Order.findByIdAndUpdate(id, { $set: payload });
+    res.status(200).json({ message: "Success", payload });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
 //Method: DELETE
@@ -49,7 +51,9 @@ app.delete("/orders/:id", async (req, res) => {
     const { id } = req.params;
 
     await Order.findByIdAndDelete(id);
-    res.status(204).json({ id: id });
+    res
+      .status(200)
+      .json({ message: `The order with ${id} id has been deleted.` });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
