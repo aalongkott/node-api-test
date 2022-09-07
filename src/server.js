@@ -5,7 +5,7 @@ require("dotenv").config();
 
 const Order = require("../models/order.js");
 
-mongoose.connect(process.env.DB_LINK);
+mongoose.connect(process.env.DB_URL);
 
 app.use(express.json());
 
@@ -63,6 +63,8 @@ app.delete("/orders/:id", async (req, res) => {
 mongoose.connection.on("error", (err) => {
   console.error("MongoDB error", err);
 });
+
+mongoose.connection.once("open", () => console.log("Connected to Database"));
 
 app.listen(9000, () => {
   console.log("Application is running on port 9000");
